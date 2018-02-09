@@ -13,6 +13,11 @@ let code = `
         /* webpackChunkName: "dynamic" */'./dynamic.jsx'/*瑟2*/), 'dynamic');
     function a(){}
     a();
+    import('./../../hellokit.jsx').then((m)=>{
+        console.log(m);
+    },()=>{});
+
+    let sss = dynamic(import(/* webpackChunkName: "231222" */'./dynamic.jsx'), 'csx');
 `;
 const inspect = require('util').inspect;
 const path = require('path');
@@ -26,6 +31,7 @@ const buildImport = (params) => template(`
   (new Promise((resolve) => {
     require.ensure([], (require) => {
         let m = require(SOURCE);
+        m = m.default || m;
         m.chunkName = '${params.webpackChunkName}';
         m.path = '';
         resolve(m);
@@ -73,17 +79,16 @@ let codeResult = babel.transform(code, {
                                     value
                                 } = comment;
                                 webpackChunkName = chunkNameReg.exec(value)[1];
+                                const newImport = buildImport({
+                                    webpackChunkName
+                                })({
+                                    SOURCE: p.node.arguments
+                                });
+                                p.replaceWith(newImport);
                             }
                         }
                     }
-
-                    console.log(webpackChunkName);
-                    const newImport = buildImport({
-                        webpackChunkName
-                    })({
-                        SOURCE: p.node.arguments
-                    });
-                    p.replaceWith(newImport);
+                    
                 }
             }
 
