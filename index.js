@@ -1,6 +1,8 @@
 'use strict';
 let babel = require('babel-core');
-import template from "babel-types";
+// import  from "babel-types";
+// import template from 'babel-template';
+const template = require('babel-template');
 let pluginParseImport = require('babel-plugin-syntax-dynamic-import');
 
 let code = `
@@ -20,11 +22,14 @@ const TYPE_IMPORT = 'Import';
 //webpack包名 正则匹配
 const chunkNameReg = /webpackChunkName\:\s*"([^"]+)"/;
 
-const buildImport = template(`
+const buildImport = (params) => template(`
   (new Promise((resolve) => {
     require.ensure([], (require) => {
-      resolve(require(SOURCE));
-    });
+        let m = require(SOURCE);
+        m.chunkName = '${params.webpackChunkName}';
+        m.path = '';
+        resolve(m);
+    },'${params.webpackChunkName}');
   }))
 `);
 
@@ -53,32 +58,33 @@ let codeResult = babel.transform(code, {
                     // console.log(path.node.arguments[0]);
                     // console.log(path.node.arguments);
                     // console.log(state.file.opts.filename);
-                    fs.writeFile(path.resolve(__dirname, './node.json'), inspect(p.node), function (err) {
-                        console.log('write done');
-                    });
-                    
+                    // fs.writeFile(path.resolve(__dirname, './node.json'), inspect(p.node), function (err) {
+                    //     console.log('write done');
+                    // });
+
                     //获取 注释的value值
                     let webpackChunkName = '';
-                    if (p.node.arguments[0].leadingComments && p.node.arguments[0].leadingComments > 0) {
+                    if (p.node.arguments[0].leadingComments && p.node.arguments[0].leadingComments.length > 0) {
                         for (let comment of p.node.arguments[0].leadingComments) {
+                            console.log(comment);
                             //是 /* */的 要求符合webpack的 webpackChunkName的注释标准
-                            if (comment.type !== 'CommentBlock') {
+                            if (comment.type === 'CommentBlock') {
                                 let {
                                     value
                                 } = comment;
-                                webpackChunkName = chunkNameReg.exec(value);
+                                webpackChunkName = chunkNameReg.exec(value)[1];
                             }
                         }
                     }
-                    console.log(webpackChunkName);
-                    console.log(p.node.arguments);
-                    
-                }
 
-                const newImport = buildImport({
-                    SOURCE: p.parentPath.node.arguments,
-                });
-                p.parentPath.replaceWith(newImport);
+                    console.log(webpackChunkName);
+                    const newImport = buildImport({
+                        webpackChunkName
+                    })({
+                        SOURCE: p.node.arguments
+                    });
+                    p.replaceWith(newImport);
+                }
             }
 
         }
