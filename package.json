@@ -4,7 +4,7 @@
   "description": "trans dynamic code",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx babel-node index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/skyujilong/babel-dynamic-bundle-react/issues"
   },
-  "homepage": "https://github.com/skyujilong/babel-dynamic-bundle-react#readme"
+  "homepage": "https://github.com/skyujilong/babel-dynamic-bundle-react#readme",
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-types": "^6.26.0",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env":"^1.6.1"
+  }
 }

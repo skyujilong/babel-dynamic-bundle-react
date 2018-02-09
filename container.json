@@ -1,0 +1,14 @@
+[ Node {
+    type: 'CallExpression',
+    start: 95,
+    end: 157,
+    loc: SourceLocation { start: [Object], end: [Object] },
+    callee: Node { type: 'Import', start: 95, end: 101, loc: [Object] },
+    arguments: [ [Object] ] },
+  Node {
+    type: 'StringLiteral',
+    start: 159,
+    end: 168,
+    loc: SourceLocation { start: [Object], end: [Object] },
+    extra: { rawValue: 'dynamic', raw: '\'dynamic\'' },
+    value: 'dynamic' } ]
