@@ -1,5 +1,5 @@
 {
-  "name": "babel-dynamic-bundle-react",
+  "name": "babel-plugin-dynamic-import-bundle",
   "version": "1.0.0",
   "description": "trans dynamic code",
   "main": "index.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/skyujilong/babel-dynamic-bundle-react.git"
+    "url": "git+https://github.com/skyujilong/babel-plugin-dynamic-import-bundle.git"
   },
   "author": "jilong5",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/skyujilong/babel-dynamic-bundle-react/issues"
+    "url": "https://github.com/skyujilong/babel-plugin-dynamic-import-bundle/issues"
   },
-  "homepage": "https://github.com/skyujilong/babel-dynamic-bundle-react#readme",
+  "homepage": "https://github.com/skyujilong/babel-plugin-dynamic-import-bundle#readme",
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-types": "^6.26.0",
