@@ -25,54 +25,53 @@ const buildImport = (params) => template(`
   }))
 `);
 
+// let codeResult = babel.transform(code, {
+//     plugins: [pluginParseImport, {
+//         visitor: {
+//             Identifier(path) {
+//                 // console.log(path.node.name);
+//             },
+//             Import(path) {
+//                 // console.log('xxxx');
+//                 // console.log(path);
+//                 // console.log(path.node.name);
+//             },
+//             ImportDeclaration(path) {
+//                 // console.log(path);
+//             },
+//             ImportDeclaration(path) {
+//                 // console.log(path.container);
+//             },
+//             CallExpression(p, state) {
+//                 if (p.node.callee.type === TYPE_IMPORT) {
+//                     //获取 注释的value值
+//                     let webpackChunkName = '';
+//                     if (p.node.arguments[0].leadingComments && p.node.arguments[0].leadingComments.length > 0) {
+//                         let hasComment = false;
+//                         for (let comment of p.node.arguments[0].leadingComments) {
+//                             //是 /* */的 要求符合webpack的 webpackChunkName的注释标准
+//                             if (comment.type === 'CommentBlock') {
+//                                 let {
+//                                     value
+//                                 } = comment;
+//                                 webpackChunkName = chunkNameReg.exec(value)[1];
+//                                 let newImport = buildImport({
+//                                     webpackChunkName
+//                                 })({
+//                                     SOURCE: p.node.arguments
+//                                 });
+//                                 p.replaceWith(newImport);
+//                                 hasComment = true;
+//                             }
+//                         }
+//                     }
 
-let codeResult = babel.transform(code, {
-    plugins: [pluginParseImport, {
-        visitor: {
-            Identifier(path) {
-                // console.log(path.node.name);
-            },
-            Import(path) {
-                // console.log('xxxx');
-                // console.log(path);
-                // console.log(path.node.name);
-            },
-            ImportDeclaration(path) {
-                // console.log(path);
-            },
-            ImportDeclaration(path) {
-                // console.log(path.container);
-            },
-            CallExpression(p, state) {
-                if (p.node.callee.type === TYPE_IMPORT) {
-                    //获取 注释的value值
-                    let webpackChunkName = '';
-                    if (p.node.arguments[0].leadingComments && p.node.arguments[0].leadingComments.length > 0) {
-                        let hasComment = false;
-                        for (let comment of p.node.arguments[0].leadingComments) {
-                            //是 /* */的 要求符合webpack的 webpackChunkName的注释标准
-                            if (comment.type === 'CommentBlock') {
-                                let {
-                                    value
-                                } = comment;
-                                webpackChunkName = chunkNameReg.exec(value)[1];
-                                let newImport = buildImport({
-                                    webpackChunkName
-                                })({
-                                    SOURCE: p.node.arguments
-                                });
-                                p.replaceWith(newImport);
-                                hasComment = true;
-                            }
-                        }
-                    }
+//                 }
+//             }
 
-                }
-            }
-
-        }
-    }]
-})
+//         }
+//     }]
+// })
 
 module.exports = () => ({
     inherits: pluginParseImport,
