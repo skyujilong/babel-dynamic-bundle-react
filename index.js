@@ -74,7 +74,7 @@ let codeResult = babel.transform(code, {
     }]
 })
 
-export default () => ({
+module.exports = () => ({
     inherits: pluginParseImport,
     visitor: {
         CallExpression(p, state) {
