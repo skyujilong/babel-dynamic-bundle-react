@@ -24,7 +24,7 @@ const buildImport = (params) => template(`
     },'${params.webpackChunkName}');
   }))
 `);
-
+console.log('test');
 // let codeResult = babel.transform(code, {
 //     plugins: [pluginParseImport, {
 //         visitor: {
