@@ -1,7 +1,5 @@
 'use strict';
 let babel = require('babel-core');
-// import  from "babel-types";
-// import template from 'babel-template';
 const template = require('babel-template');
 let pluginParseImport = require('babel-plugin-syntax-dynamic-import');
 
@@ -19,59 +17,12 @@ const buildImport = (params) => template(`
         let m = require(SOURCE);
         m = m.default || m;
         m.chunkName = '${params.webpackChunkName}';
-        m.path = '';
+        m.sourceFilePath = '${params.sourceFilePath}';
         resolve(m);
     },'${params.webpackChunkName}');
   }))
 `);
-console.log('test');
-// let codeResult = babel.transform(code, {
-//     plugins: [pluginParseImport, {
-//         visitor: {
-//             Identifier(path) {
-//                 // console.log(path.node.name);
-//             },
-//             Import(path) {
-//                 // console.log('xxxx');
-//                 // console.log(path);
-//                 // console.log(path.node.name);
-//             },
-//             ImportDeclaration(path) {
-//                 // console.log(path);
-//             },
-//             ImportDeclaration(path) {
-//                 // console.log(path.container);
-//             },
-//             CallExpression(p, state) {
-//                 if (p.node.callee.type === TYPE_IMPORT) {
-//                     //获取 注释的value值
-//                     let webpackChunkName = '';
-//                     if (p.node.arguments[0].leadingComments && p.node.arguments[0].leadingComments.length > 0) {
-//                         let hasComment = false;
-//                         for (let comment of p.node.arguments[0].leadingComments) {
-//                             //是 /* */的 要求符合webpack的 webpackChunkName的注释标准
-//                             if (comment.type === 'CommentBlock') {
-//                                 let {
-//                                     value
-//                                 } = comment;
-//                                 webpackChunkName = chunkNameReg.exec(value)[1];
-//                                 let newImport = buildImport({
-//                                     webpackChunkName
-//                                 })({
-//                                     SOURCE: p.node.arguments
-//                                 });
-//                                 p.replaceWith(newImport);
-//                                 hasComment = true;
-//                             }
-//                         }
-//                     }
-
-//                 }
-//             }
-
-//         }
-//     }]
-// })
+const fileDirReg = new RegExp(path.sep + '+' + '[^' + path.sep + ']+$');
 
 module.exports = () => ({
     inherits: pluginParseImport,
@@ -88,8 +39,10 @@ module.exports = () => ({
                                 value
                             } = comment;
                             webpackChunkName = chunkNameReg.exec(value)[1];
+                            let sourceFilePath = path.resolve(state.file.opts.filename.replace(fileDirReg, ''), p.node.arguments[0].value);
                             let newImport = buildImport({
-                                webpackChunkName
+                                webpackChunkName,
+                                sourceFilePath
                             })({
                                 SOURCE: p.node.arguments
                             });
