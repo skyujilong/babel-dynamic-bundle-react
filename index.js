@@ -12,15 +12,19 @@ const TYPE_IMPORT = 'Import';
 const chunkNameReg = /webpackChunkName\:\s*"([^"]+)"/;
 
 const buildImport = (params) => template(`
-  (new Promise((resolve) => {
-    require.ensure([], (require) => {
-        let m = require(SOURCE);
-        m = m.default || m;
-        m.chunkName = '${params.webpackChunkName}';
-        m.sourceFilePath = '${params.sourceFilePath}';
-        resolve(m);
-    },'${params.webpackChunkName}');
-  }))
+    (()=>{
+        let promise = (new Promise((resolve) => {
+            require.ensure([], (require) => {
+                let m = require(SOURCE);
+                m = m.default || m;
+                m.chunkName = '${params.webpackChunkName}';
+                m.sourceFilePath = '${params.sourceFilePath}';
+                resolve(m);
+            }, '${params.webpackChunkName}');
+        }));
+        promise.keyPath = '${params.sourceFilePath}';
+        return promise;
+    })()
 `);
 const fileDirReg = new RegExp(path.sep + '+' + '[^' + path.sep + ']+$');
 
