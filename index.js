@@ -9,19 +9,26 @@ const fs = require("fs");
 
 const TYPE_IMPORT = 'Import';
 //webpack包名 正则匹配
-const chunkNameReg = /webpackChunkName\:\s*"([^"]+)"/;
+const chunkNameReg = /webpackChunkName\:\s*["']([^"']+)["']/;
 
 const buildImport = (params) => template(`
     (()=>{
-        let promise = (new Promise((resolve) => {
-            require.ensure([], (require) => {
-                let m = require(SOURCE);
-                m = m.default || m;
-                m.chunkName = '${params.webpackChunkName}';
-                m.sourceFilePath = '${params.sourceFilePath}';
-                resolve(m);
-            }, '${params.webpackChunkName}');
-        }));
+        
+        let promise = '${params.webpackChunkName}' ?  
+            (new Promise((resolve) => {
+                require.ensure([], (require) => {
+                    let m = require(SOURCE);
+                    m = m.default || m;
+                    resolve(m);
+                }, '${params.webpackChunkName}');
+            })) : 
+            (new Promise((resolve) => {
+                require.ensure([], (require) => {
+                    let m = require(SOURCE);
+                    m = m.default || m;
+                    resolve(m);
+                });
+            }));
         promise.keyPath = '${params.sourceFilePath}';
         return promise;
     })()
@@ -32,28 +39,32 @@ module.exports = () => ({
     inherits: pluginParseImport,
     visitor: {
         CallExpression(p, state) {
-            if (p.node.callee.type === TYPE_IMPORT) {
+            //相对路径继续
+            if (p.node.callee.type === TYPE_IMPORT && p.node.arguments[0].value[0] === '.') {
+                debugger;
                 //获取 注释的value值
                 let webpackChunkName = '';
+                //获取 webpackChunkName
                 if (p.node.arguments[0].leadingComments && p.node.arguments[0].leadingComments.length > 0) {
                     for (let comment of p.node.arguments[0].leadingComments) {
                         //是 /* */的 要求符合webpack的 webpackChunkName的注释标准
-                        if (comment.type === 'CommentBlock') {
+                        if (comment.type === 'CommentBlock' && chunkNameReg.test(comment.value)) {
                             let {
                                 value
                             } = comment;
                             webpackChunkName = chunkNameReg.exec(value)[1];
-                            let sourceFilePath = path.resolve(state.file.opts.filename.replace(fileDirReg, ''), p.node.arguments[0].value);
-                            let newImport = buildImport({
-                                webpackChunkName,
-                                sourceFilePath
-                            })({
-                                SOURCE: p.node.arguments
-                            });
-                            p.replaceWith(newImport);
+                            break;
                         }
                     }
                 }
+                let sourceFilePath = path.resolve(state.file.opts.filename.replace(fileDirReg, ''), p.node.arguments[0].value.replace(/(index){0,1}\.(js|jsx)$/, '').replace(/[/\\]$/, ''));
+                let newImport = buildImport({
+                    webpackChunkName,
+                    sourceFilePath
+                })({
+                    SOURCE: p.node.arguments
+                });
+                p.replaceWith(newImport);
 
             }
         }
