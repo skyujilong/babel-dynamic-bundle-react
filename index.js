@@ -13,7 +13,6 @@ const chunkNameReg = /webpackChunkName\:\s*["']([^"']+)["']/;
 
 const buildImport = (params) => template(`
     (()=>{
-        
         let promise = '${params.webpackChunkName}' ?  
             (new Promise((resolve) => {
                 require.ensure([], (require) => {
@@ -41,7 +40,6 @@ module.exports = () => ({
         CallExpression(p, state) {
             //相对路径继续
             if (p.node.callee.type === TYPE_IMPORT && p.node.arguments[0].value[0] === '.') {
-                debugger;
                 //获取 注释的value值
                 let webpackChunkName = '';
                 //获取 webpackChunkName
