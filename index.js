@@ -55,6 +55,7 @@ module.exports = () => ({
                         }
                     }
                 }
+                //生成路径，去除 后缀名为index.js|jsx的
                 let sourceFilePath = path.resolve(state.file.opts.filename.replace(fileDirReg, ''), p.node.arguments[0].value.replace(/(index){0,1}\.(js|jsx)$/, '').replace(/[/\\]$/, ''));
                 let newImport = buildImport({
                     webpackChunkName,
